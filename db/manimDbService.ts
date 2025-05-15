@@ -121,4 +121,12 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-export default { saveManimProject };
+export const cleanupTempFiles = async (workDir: string) => {
+  try {
+    await fs.promises.rm(workDir, { recursive: true, force: true });
+  } catch (error) {
+    console.error(`Error cleaning up directory ${workDir}:`, error);
+  }
+};
+
+export default { saveManimProject, cleanupTempFiles };
