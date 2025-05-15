@@ -1,0 +1,5 @@
+# This file is used internally by FFMPEG.
+file 'file:/manim/media/videos/scene/720p30/partial_movie_files/RotatingSquare/2016333726_1339841697_223132457.mp4'
+file 'file:/manim/media/videos/scene/720p30/partial_movie_files/RotatingSquare/543634251_2413325468_330572323.mp4'
+file 'file:/manim/media/videos/scene/720p30/partial_movie_files/RotatingSquare/543634251_4217992463_1751336957.mp4'
+file 'file:/manim/media/videos/scene/720p30/partial_movie_files/RotatingSquare/543634251_4092118872_4087990943.mp4'

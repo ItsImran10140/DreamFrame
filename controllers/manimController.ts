@@ -2,6 +2,8 @@ import path from "path";
 import llmCodeGenService from "../services/llmCodeGenService";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
+import { saveManimCode } from "../utils/fileUtils";
+import { runManimDocker } from "../services/dockerService";
 
 const jobStatus: any = {};
 export const generateManimVideo = async (
@@ -61,7 +63,22 @@ async function processManimRequest(
     // Step 2: Save Manim code to file
     jobStatus[jobId].progress = "Saving Manim code";
 
+    console.log(typeof manimCode);
     console.log(manimCode);
+    // TODO: SAVE CODE TO DATABASE
+    // Step 3: Run Docker container with Manim code
+    jobStatus[jobId].progress = "Running Manim in Docker container";
+    const workDir = path.join(__dirname, "..", "temp", jobId);
+    const pythonFilePath = await saveManimCode(workDir, manimCode as string);
+    //  // console.log(
+    //   `Running Manim for job ${jobId}, pythonFilePath: ${pythonFilePath}`
+    // );
+    res.write("Running Manim in Docker container...\n");
+
+    const outputPath = await runManimDocker(workDir, pythonFilePath);
+    console.log("VIDEO OUTPUT \n");
+    console.log(outputPath);
+    console.log("VIDEO INPUT \n");
     res.end();
   } catch (error: any) {
     console.error(`Error processing job ${jobId}:`, error);
