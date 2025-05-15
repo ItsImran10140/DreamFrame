@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { saveManimCode } from "../utils/fileUtils";
 import { runManimDocker } from "../services/dockerService";
+import manimDbService from "../db/manimDbService";
 
 const jobStatus: any = {};
 export const generateManimVideo = async (
@@ -13,7 +14,7 @@ export const generateManimVideo = async (
   try {
     const { prompt } = req.body;
     if (!prompt) {
-      res.status(400).json({ error: "Prompt i Required" });
+      res.status(400).json({ error: "Prompt is Required" });
       return;
     }
 
@@ -79,6 +80,21 @@ async function processManimRequest(
     console.log("VIDEO OUTPUT \n");
     console.log(outputPath);
     console.log("VIDEO INPUT \n");
+
+    try {
+      await manimDbService.saveManimProject(
+        jobId,
+        prompt,
+        manimCode as string,
+        workDir,
+        outputPath
+      );
+      res.write("Successfully saved project and videos to database.");
+    } catch (dbError: any) {
+      console.error("Database error:", dbError);
+      res.write(`Warning: Failed to save to database: ${dbError.message}\n`);
+    }
+
     res.end();
   } catch (error: any) {
     console.error(`Error processing job ${jobId}:`, error);

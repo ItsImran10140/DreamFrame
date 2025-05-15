@@ -17,7 +17,12 @@ export const saveManimProject = async (
         code,
       },
     });
-  } catch (error) {}
+    await saveAllVideo(workDir, project.id, outPutVideoPath);
+    return project.id;
+  } catch (error) {
+    console.error("Error saving Manim project to database:", error);
+    throw new Error("Failed to save project to database");
+  }
 };
 
 async function saveAllVideo(
@@ -115,3 +120,5 @@ async function fileExists(path: string): Promise<boolean> {
     return false;
   }
 }
+
+export default { saveManimProject };
