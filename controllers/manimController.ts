@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { saveManimCode } from "../utils/fileUtils";
 import { runManimDocker } from "../services/dockerService";
 import manimDbService from "../db/manimDbService";
+import { prisma } from "../src/db";
 
 const jobStatus: any = {};
 export const generateManimVideo = async (
@@ -89,12 +90,33 @@ async function processManimRequest(
         workDir,
         outputPath
       );
-      res.write("Successfully saved project and videos to database.");
+      res.write("Successfully saved project and videos to database. \n");
     } catch (dbError: any) {
       console.error("Database error:", dbError);
       res.write(`Warning: Failed to save to database: ${dbError.message}\n`);
     }
 
+    // Step 5: Clean up temporary files
+    jobStatus[jobId].progress = "Cleaning up temporary files";
+    res.write("Cleaning up temporary files...\n");
+
+    try {
+      await manimDbService.cleanupTempFiles(workDir);
+      res.write("Temporary files cleaned up successfully.\n");
+    } catch (cleanupError: any) {
+      console.error("Cleanup error:", cleanupError);
+      res.write(
+        `Warning: Failed to clean up temporary files: ${cleanupError.message}\n`
+      );
+    }
+
+    // Step 6: Finalize response
+    jobStatus[jobId] = {
+      status: "Completed",
+      outputPath: outputPath,
+    };
+
+    res.write(`Process completed successfully. Job ID: ${jobId}\n`);
     res.end();
   } catch (error: any) {
     console.error(`Error processing job ${jobId}:`, error);
@@ -108,3 +130,74 @@ async function processManimRequest(
     res.end();
   }
 }
+
+export const getManimProject = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { projectId } = req.params;
+    if (!projectId) {
+      res.status(400).json({ error: "Project ID is required" });
+    }
+
+    const project = await prisma.manimProject.findUnique({
+      where: { id: projectId },
+      include: {
+        videos: {
+          select: {
+            id: true,
+            fileName: true,
+            fileType: true,
+            fileSize: true,
+            isOutput: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+    if (!project) {
+      res.status(404).json({ error: "Project found" });
+      return;
+    }
+    res.json(project);
+  } catch (error) {
+    console.error("Error retrieving project:", error);
+    res.status(500).json({ error: "Failed to retrieve project" });
+  }
+};
+
+export const getVideo = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { videoId } = req.params;
+
+    if (!videoId) {
+      res.status(400).json({ error: "Video ID is required" });
+      return;
+    }
+
+    // Get video data
+    const video = await prisma.video.findUnique({
+      where: { id: videoId },
+    });
+
+    if (!video) {
+      res.status(404).json({ error: "Video not found" });
+      return;
+    }
+
+    // Set appropriate headers
+    res.setHeader("Content-Type", `video/${video.fileType}`);
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${video.fileName}"`
+    );
+    res.setHeader("Content-Length", video.fileSize);
+
+    // Send the video data
+    res.send(video.data);
+  } catch (error) {
+    console.error("Error retrieving video:", error);
+    res.status(500).json({ error: "Failed to retrieve video" });
+  }
+};
