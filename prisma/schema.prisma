@@ -23,6 +23,8 @@ model Video {
   fileType String
   fileSize Int
   data Bytes
+  s3Key String
+  s3Bucket String
   isOutput Boolean
   createdAt DateTime @default(now())
   manimProject ManimProject @relation(fields: [manimProjectId], references: [id], onDelete: Cascade)
