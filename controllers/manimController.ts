@@ -49,9 +49,24 @@ async function processManimRequest(
     // Step 1: Generate Manim code using Gemini
     jobStatus[jobId].progress = "Generating Manim code with Gemini";
     res.write("Generating Manim code with Gemini AI...\n");
+
     let manimCode;
+    let explanation;
     try {
-      manimCode = await llmCodeGenService.generateManimCode(prompt);
+      // Updated to get both code and explanation
+      // const result = await llmCodeGenService.generateManimCode(prompt);
+      const result = await llmCodeGenService.generateManimCode(prompt);
+
+      manimCode = result.code;
+      explanation = result.explanation;
+
+      // manimCode = result.code;
+      // explanation = result.explanation;
+
+      // Stream a notice about the explanation being generated
+      if (explanation) {
+        res.write("Generated code explanation successfully.\n");
+      }
     } catch (geminiError) {
       console.error("Gemini API error:", geminiError);
       res.write("Gemini API error occurred. Using fallback code template.\n");
@@ -85,12 +100,14 @@ async function processManimRequest(
     res.write("Saving project and videos to S3 and database...\n");
 
     try {
+      // Updated to include explanation in the saved project
       await manimDbService.saveManimProject(
         jobId,
         prompt,
         manimCode as string,
         workDir,
-        outputPath
+        outputPath,
+        explanation ?? "" // Ensure explanation is always a string
       );
       res.write("Successfully saved project and videos to S3 and database. \n");
     } catch (dbError: any) {
