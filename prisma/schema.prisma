@@ -12,6 +12,7 @@ model ManimProject {
   id String @id @default(uuid())
   prompt String
   code String @db.Text
+  explanation String? @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   videos Video[]
