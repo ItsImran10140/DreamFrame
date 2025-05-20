@@ -82,7 +82,7 @@ async function migrateVideosToS3() {
 
     // Clean up temporary directory
     try {
-      // await fs.promises.rmdir(tempDir, { recursive: true });
+      await fs.promises.rmdir(tempDir, { recursive: true });
       console.log(`Removed temporary directory: ${tempDir}`);
     } catch (cleanupError) {
       console.error(`Error cleaning up temporary directory: ${cleanupError}`);
