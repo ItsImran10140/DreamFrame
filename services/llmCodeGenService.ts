@@ -2,8 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 // Initialize Gemini API with your API key
 const ai = new GoogleGenAI({
-  apiKey:
-    process.env.GEMINI_API_KEY || "AIzaSyDjcW3PBt9yOh5Lhyw1TnFpa8PCFLEtsI0",
+  apiKey: process.env.GEMINI_API_KEY || "",
 });
 
 // Base prompt for code generation
