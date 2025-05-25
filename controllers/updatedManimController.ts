@@ -2,10 +2,11 @@ import { Request, Response } from "express";
 import path from "path";
 import { saveManimCode } from "../utils/fileUtils";
 import { runManimDocker } from "../services/dockerService";
-import manimDbService from "../db/manimDbService";
-import { prisma } from "../src/db";
+import { prisma } from "../db/db";
 import { validateManimCode } from "../utils/codeValidator";
 import fs from "fs";
+import { saveAllVideo } from "../db/saveAllVideo";
+import { cleanupTempFiles } from "../db/cleanupTempFiles";
 
 export const updateManimCode = async (
   req: Request,
@@ -100,7 +101,7 @@ export const updateManimCode = async (
         res.write("Saving new video to database...\n");
         try {
           // Use the improved saveAllVideo function that preserves existing videos
-          await manimDbService.saveAllVideo(workDir, projectId, outputPath);
+          await saveAllVideo(workDir, projectId, outputPath);
           res.write("Successfully saved new video to database.\n");
 
           // Log the updated count
@@ -125,7 +126,7 @@ export const updateManimCode = async (
       // 8. Clean up temporary files
       res.write("Cleaning up temporary files...\n");
       try {
-        await manimDbService.cleanupTempFiles(workDir);
+        await cleanupTempFiles(workDir);
         res.write("Temporary files cleaned up successfully.\n");
       } catch (cleanupError: any) {
         res.write(
