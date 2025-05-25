@@ -11,6 +11,10 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/manim", manimRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the Manim API");
+});
+
 // Connect to database
 connectDB();
 
