@@ -148,7 +148,7 @@ export class ManimValidator {
     } finally {
       // Clean up temp file
       try {
-        // fs.unlinkSync(tmpFile);
+        fs.unlinkSync(tmpFile);
       } catch (e) {
         // Ignore cleanup errors
       }

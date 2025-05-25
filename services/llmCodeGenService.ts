@@ -25,18 +25,13 @@ For the following Manim code, provide a detailed explanation that includes:
 
 Explain in a clear, educational way that helps someone learning Manim understand both the concepts and implementation details.`;
 
-/**
- * Generates Manim code and an explanation for the given prompt using Gemini API
- * @param prompt User prompt describing the animation
- * @returns Object containing the generated code and explanation
- */
-const generateManimCode = async (prompt: string) => {
+export const generateManimCode = async (prompt: string) => {
   try {
     let generatedCode = "";
 
     // Create a chat for code generation
     const codeChat = ai.chats.create({
-      model: "gemini-2.0-flash", // You might want to adjust the model name if needed
+      model: "gemini-2.0-flash",
       history: [
         {
           role: "user",
@@ -69,11 +64,10 @@ const generateManimCode = async (prompt: string) => {
 
     // Clean the code
     const cleanedCode = generatedCode
-      .replace(/^```\s*python\s*\n?/gm, "") // Remove starting markers
-      .replace(/```\s*$/gm, "") // Remove ending markers
+      .replace(/^```\s*python\s*\n?/gm, "")
+      .replace(/```\s*$/gm, "")
       .trim();
 
-    // Now generate explanation for the cleaned code
     let explanation = "";
     try {
       const explanationChat = ai.chats.create({
@@ -124,8 +118,4 @@ const generateManimCode = async (prompt: string) => {
     console.error("Error calling Gemini API:", error);
     throw new Error("Failed to generate Manim code or explanation");
   }
-};
-
-export default {
-  generateManimCode,
 };

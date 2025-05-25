@@ -1,7 +1,7 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
-import { prisma, connectDB } from "./db";
-import manimRoutes from "../routes/manim";
+import { prisma, connectDB } from "../db/db";
+import manimRoutes from "../routes/routes";
 const app = express();
 
 const PORT = 3000;
