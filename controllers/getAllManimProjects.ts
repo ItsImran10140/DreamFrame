@@ -1,12 +1,6 @@
 import { Request, Response } from "express";
-import { prisma } from "../src/db";
+import { prisma } from "../db/db";
 
-/**
- * Fetches all ManimProjects and their associated videos
- *
- * @param req Express Request object
- * @param res Express Response object
- */
 export const getAllManimProjects = async (
   req: Request,
   res: Response
@@ -59,12 +53,6 @@ export const getAllManimProjects = async (
   }
 };
 
-/**
- * Search ManimProjects by prompt text
- *
- * @param req Express Request object
- * @param res Express Response object
- */
 export const searchManimProjects = async (
   req: Request,
   res: Response
