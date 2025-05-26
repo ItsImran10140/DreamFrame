@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/index.ts",
-    "start": "node dist/index.js"
+    "build": "tsc && npx prisma generate",
+    "start": "node dist/src/index.js"
   },
   "keywords": [],
   "author": "",
