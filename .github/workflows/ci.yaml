@@ -15,9 +15,9 @@ jobs:
 
       - name: SSH and deploy
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH.PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          echo "$SSH_PRIVATE_KEY" > keyfile
+          echo "$SSH_PRIVATE_KEY" > keyfile.pem
           chmod 600 keyfile
           mkdir -p ~/.ssh
           cp known_hosts ~/.ssh/known_hosts
