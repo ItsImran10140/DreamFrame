@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/manim", manimRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the Manim API");
+  res.send("Welcome to the Manim API NEW!");
 });
 
 // Connect to database
