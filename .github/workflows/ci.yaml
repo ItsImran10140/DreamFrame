@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout code
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: SSH and deploy
         env:
@@ -21,4 +21,4 @@ jobs:
           chmod 600 keyfile.pem
           mkdir -p ~/.ssh
           cp known_hosts ~/.ssh/known_hosts
-          ssh -t -i "dymanokey.pem" ubuntu@ec2-15-207-100-232.ap-south-1.compute.amazonaws.com "bash -i -c 'source ~/deploy.sh'"
+          ssh -i keyfile.pem -o StrictHostKeyChecking=no ubuntu@ec2-15-207-100-232.ap-south-1.compute.amazonaws.com "bash -i -c 'source ~/deploy.sh'"
