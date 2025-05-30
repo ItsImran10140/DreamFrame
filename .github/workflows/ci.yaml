@@ -18,7 +18,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           echo "$SSH_PRIVATE_KEY" > keyfile.pem
-          chmod 600 keyfile
+          chmod 600 keyfile.pem
           mkdir -p ~/.ssh
           cp known_hosts ~/.ssh/known_hosts
           ssh -t -i "dymanokey.pem" ubuntu@ec2-15-207-100-232.ap-south-1.compute.amazonaws.com "bash -i -c 'source ~/deploy.sh'"
