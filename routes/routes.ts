@@ -20,7 +20,7 @@ router.post("/generate", authenticateToken, (req, res) =>
   generateManimVideo(req, res)
 );
 router.get("/project/:projectId", authenticateToken, getManimProject);
-router.get("/video/:videoId", authenticateToken, getVideo);
+router.get("/video/:videoId", getVideo);
 router.get("/projects", authenticateToken, getAllManimProjects);
 router.put("/update/project/:projectId", authenticateToken, (req, res) =>
   updateManimCode(req, res)
