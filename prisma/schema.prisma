@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma/client"
 }
 
 datasource db {
@@ -16,6 +15,8 @@ model ManimProject {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   videos Video[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 }
 
 model Video {
@@ -39,4 +40,5 @@ model User {
   password String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
+  manimProjects ManimProject[]
 }
