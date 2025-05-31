@@ -15,6 +15,7 @@ export const updateManimCode = async (
   try {
     const { projectId } = req.params;
     const { code } = req.body;
+    const userId = req.user?.id; // Assuming user ID is set in the request by authentication middleware
 
     if (!projectId || !code) {
       res.status(400).json({
@@ -23,8 +24,13 @@ export const updateManimCode = async (
       return; // Added return statement to prevent further execution
     }
 
+    if (!userId) {
+      res.status(401).json({ error: "User authentication required" });
+      return;
+    }
+
     const existingProject = await prisma.manimProject.findUnique({
-      where: { id: projectId },
+      where: { id: projectId, userId: userId },
       include: {
         videos: true, // Include existing videos for logging purposes
       },
@@ -89,7 +95,7 @@ export const updateManimCode = async (
       // 6. Update the project in the database
       res.write("Updating project code in database...\n");
       await prisma.manimProject.update({
-        where: { id: projectId },
+        where: { id: projectId, userId: userId },
         data: {
           code: code,
           updatedAt: new Date(),
@@ -106,7 +112,7 @@ export const updateManimCode = async (
 
           // Log the updated count
           const updatedProject = await prisma.manimProject.findUnique({
-            where: { id: projectId },
+            where: { id: projectId, userId: userId },
             include: { videos: true },
           });
 
