@@ -7,13 +7,19 @@ export const getManimProject = async (
 ): Promise<void> => {
   try {
     const { projectId } = req.params;
+    const userId = req.user?.id; // Assuming user ID is set in the request by authentication middleware
     if (!projectId) {
       res.status(400).json({ error: "Project ID is required" });
       return;
     }
 
+    if (!userId) {
+      res.status(401).json({ error: "User authentication required" });
+      return;
+    }
+
     const project = await prisma.manimProject.findUnique({
-      where: { id: projectId },
+      where: { id: projectId, userId: userId },
       include: {
         videos: {
           select: {
