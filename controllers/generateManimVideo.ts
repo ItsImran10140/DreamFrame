@@ -14,6 +14,13 @@ export const generateManimVideo = async (
       return;
     }
 
+    // Get user from authenticated request
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: "User authentication required" });
+      return;
+    }
+
     const jobId = uuidv4();
 
     jobStatus[jobId] = {
@@ -27,7 +34,8 @@ export const generateManimVideo = async (
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
-    processManimRequest(jobId, prompt, res);
+    // Pass userId to processManimRequest
+    processManimRequest(jobId, prompt, res, userId);
   } catch (error) {
     console.error("Error in generateManimVideo:", error);
     res.status(500).json({ error: "Internal server error" });
