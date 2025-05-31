@@ -9,7 +9,8 @@ import { cleanupTempFiles } from "../db/cleanupTempFiles";
 export const processManimRequest = async (
   jobId: string,
   prompt: string,
-  res: Response
+  res: Response,
+  userId: string
 ) => {
   try {
     // Step 1: Generate Manim code using Gemini
@@ -59,7 +60,8 @@ export const processManimRequest = async (
         manimCode as string,
         workDir,
         outputPath,
-        explanation ?? ""
+        explanation ?? "",
+        userId
       );
       res.write("Successfully saved project and videos to S3 and database. \n");
     } catch (dbError: any) {

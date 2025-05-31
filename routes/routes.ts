@@ -16,11 +16,13 @@ import { deleteAccount } from "../controllers/user/deleteAccount";
 const router = express.Router();
 
 // Manim routes
-router.post("/generate", (req, res) => generateManimVideo(req, res));
-router.get("/project/:projectId", getManimProject);
-router.get("/video/:videoId", getVideo);
-router.get("/projects", getAllManimProjects);
-router.put("/update/project/:projectId", (req, res) =>
+router.post("/generate", authenticateToken, (req, res) =>
+  generateManimVideo(req, res)
+);
+router.get("/project/:projectId", authenticateToken, getManimProject);
+router.get("/video/:videoId", authenticateToken, getVideo);
+router.get("/projects", authenticateToken, getAllManimProjects);
+router.put("/update/project/:projectId", authenticateToken, (req, res) =>
   updateManimCode(req, res)
 );
 

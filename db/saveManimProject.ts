@@ -7,7 +7,8 @@ export const saveManimProject = async (
   code: string,
   workDir: string,
   outPutVideoPath: string,
-  explanation: string
+  explanation: string,
+  userId: string
 ) => {
   try {
     const project = await prisma.manimProject.create({
@@ -16,6 +17,7 @@ export const saveManimProject = async (
         prompt,
         code,
         explanation,
+        userId,
       },
     });
     await saveAllVideo(workDir, project.id, outPutVideoPath);
