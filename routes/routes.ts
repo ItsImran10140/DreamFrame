@@ -12,6 +12,7 @@ import { updateProfile } from "../controllers/user/updateProfile";
 import { updatePassword } from "../controllers/user/updatePassword";
 import { logout } from "../controllers/user/logout";
 import { deleteAccount } from "../controllers/user/deleteAccount";
+import { googleLogin } from "../controllers/user/googleLogin";
 
 const router = express.Router();
 
@@ -29,6 +30,8 @@ router.put("/update/project/:projectId", authenticateToken, (req, res) =>
 // User
 router.post("/register", register);
 router.post("/login", login);
+
+router.get("/google", googleLogin);
 
 // Protected routes (require authentication)
 router.get("/profile", authenticateToken, getProfile);
