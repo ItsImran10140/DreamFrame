@@ -23,7 +23,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Verify password
-    const isPasswordValid = await comparePassword(password, user.password);
+    const isPasswordValid = await comparePassword(
+      password,
+      user.password || ""
+    );
 
     if (!isPasswordValid) {
       res.status(401).json({

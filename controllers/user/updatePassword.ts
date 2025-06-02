@@ -39,7 +39,7 @@ export const updatePassword = async (
     // Verify current password
     const isCurrentPasswordValid = await comparePassword(
       currentPassword,
-      user.password
+      user.password || ""
     );
 
     if (!isCurrentPasswordValid) {
