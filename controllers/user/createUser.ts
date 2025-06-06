@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../db/db";
 import { hashPassword } from "../../utils/passwords";
 import { generateToken, generateRefreshToken } from "../../utils/jwt";
-import { registerSchema, RegisterInput } from "../../utils/authValidator";
+import { registerSchema, RegisterInput } from "../../validator/authValidator";
 import { UserPayload } from "../../types/authTypes";
 
 // Register User

@@ -3,7 +3,7 @@ import { prisma } from "../../db/db";
 import {
   UpdatePasswordInput,
   updatePasswordSchema,
-} from "../../utils/authValidator";
+} from "../../validator/authValidator";
 import { comparePassword, hashPassword } from "../../utils/passwords";
 
 export const updatePassword = async (

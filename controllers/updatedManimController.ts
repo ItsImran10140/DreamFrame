@@ -3,7 +3,7 @@ import path from "path";
 import { saveManimCode } from "../utils/fileUtils";
 import { runManimDocker } from "../services/dockerService";
 import { prisma } from "../db/db";
-import { validateManimCode } from "../utils/codeValidator";
+import { validateManimCode } from "../validator/codeValidator";
 import fs from "fs";
 import { saveAllVideo } from "../db/saveAllVideo";
 import { cleanupTempFiles } from "../db/cleanupTempFiles";

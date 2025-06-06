@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../db/db";
 import { comparePassword } from "../../utils/passwords";
 import { generateToken, generateRefreshToken } from "../../utils/jwt";
-import { LoginInput, loginSchema } from "../../utils/authValidator";
+import { LoginInput, loginSchema } from "../../validator/authValidator";
 import { UserPayload } from "../../types/authTypes";
 
 export const login = async (req: Request, res: Response): Promise<void> => {

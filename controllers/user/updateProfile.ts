@@ -3,7 +3,7 @@ import { prisma } from "../../db/db";
 import {
   UpdateProfileInput,
   updateProfileSchema,
-} from "../../utils/authValidator";
+} from "../../validator/authValidator";
 
 export const updateProfile = async (
   req: Request,
