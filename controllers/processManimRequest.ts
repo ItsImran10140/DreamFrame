@@ -6,22 +6,6 @@ import { runManimDocker } from "../services/dockerService";
 import saveManimProject from "../db/saveManimProject";
 import { cleanupTempFiles } from "../db/cleanupTempFiles";
 
-// Helper function to get user-friendly error message
-const getErrorMessage = (errorCode: string, originalMessage: string) => {
-  switch (errorCode) {
-    case "SERVICE_UNAVAILABLE":
-      return "🚫 AI service is currently busy. Please try again in a few minutes.";
-    case "QUOTA_EXCEEDED":
-      return "⏳ API quota exceeded. Please try again later.";
-    case "API_KEY_ERROR":
-      return "🔑 Service configuration error. Please contact support.";
-    case "NETWORK_ERROR":
-      return "🌐 Network connectivity issue. Please check your connection and try again.";
-    default:
-      return `❌ Service temporarily unavailable: ${originalMessage}`;
-  }
-};
-
 export const processManimRequest = async (
   jobId: string,
   prompt: string,
@@ -30,113 +14,80 @@ export const processManimRequest = async (
 ) => {
   try {
     // Step 1: Generate Manim code using Gemini
-    res.write("Generating Manim code with Gemini AI...\n");
+    res.write("Generating Manim Code...\n");
 
-    let manimCode: string;
-    let explanation: string;
-
+    let manimCode;
+    let explanation;
     try {
-      // Updated to handle the new return format
+      // Updated to get both code and explanation
       const result = await generateManimCode(prompt);
 
-      if (result.success && result.code && result.explanation) {
-        manimCode = result.code;
-        explanation = result.explanation;
-        res.write("✅ Generated code and explanation successfully.\n");
-      } else {
-        // Handle API error cases - end the process here
-        const errorCode = result.error?.code || "UNKNOWN_ERROR";
-        const errorMessage = getErrorMessage(
-          errorCode,
-          result.error?.message || "Unknown error"
-        );
+      manimCode = result.code;
+      explanation = result.explanation;
 
-        console.error("Gemini API error:", result.error);
-        res.write(`${errorMessage}\n`);
-        res.write("Please try again later.\n");
-        res.end();
-        return;
+      if (explanation) {
+        res.write("Generated code explanation successfully.\n");
       }
     } catch (geminiError) {
       console.error("Gemini API error:", geminiError);
-      res.write(
-        "🚫 AI service is currently unavailable. Please try again in a few minutes.\n"
-      );
-      res.end();
-      return;
+      res.write("Gemini API error occurred. Using fallback code template.\n");
     }
 
-    // Stream generated code info to client (don't stream the entire code as it's long)
-    res.write("📝 Manim code generated successfully.\n");
-    res.write(`📊 Code length: ${manimCode.length} characters\n`);
-    res.write("🚀 Executing Manim animation...\n");
+    // Stream generated code to client
+    res.write("Generated Manim code:\n");
+    res.write(manimCode);
+    res.write("\n\nExecuting Manim animation...\n");
 
     // Step 2: Save Manim code to file
-    console.log("Manim code type:", typeof manimCode);
-    console.log("Manim code length:", manimCode.length);
+    console.log(typeof manimCode);
+    console.log(manimCode);
 
     // Step 3: Run Docker container with Manim code
     const workDir = path.join(__dirname, "..", "temp", jobId);
-    const pythonFilePath = await saveManimCode(workDir, manimCode);
-    res.write("🐳 Running Manim in Docker container...\n");
+    const pythonFilePath = await saveManimCode(workDir, manimCode as string);
+    // res.write("Running Manim in Docker container...\n");
 
-    let outputPath: string;
-    try {
-      outputPath = await runManimDocker(workDir, pythonFilePath);
-      console.log("Docker output path:", outputPath);
-      res.write("✅ Manim execution completed successfully.\n");
-    } catch (dockerError) {
-      console.error("Docker execution error:", dockerError);
-      res.write(`❌ Docker execution failed: ${dockerError}\n`);
-      throw dockerError;
-    }
+    const outputPath = await runManimDocker(workDir, pythonFilePath);
+    console.log(outputPath);
 
     // Step 4: Save to database and S3
-    res.write("💾 Saving project and videos to S3 and database...\n");
+    res.write("Almost their Producing the Animation...\n");
 
     try {
       await saveManimProject(
         jobId,
         prompt,
-        manimCode,
+        manimCode as string,
         workDir,
         outputPath,
-        explanation,
+        explanation ?? "",
         userId
       );
-      res.write(
-        "✅ Successfully saved project and videos to S3 and database.\n"
-      );
+      res.write("Successfully Done. \n");
     } catch (dbError: any) {
       console.error("Database/S3 error:", dbError);
       res.write(
-        `⚠️  Warning: Failed to save to S3/database: ${dbError.message}\n`
+        `Something went wrong. Please try Again Later. ${dbError.message}\n`
       );
-      // Don't throw here - continue with cleanup
     }
 
     // Step 5: Clean up temporary files
-    res.write("🧹 Cleaning up temporary files...\n");
+    // res.write("Cleaning up temporary files...\n");
 
     try {
       await cleanupTempFiles(workDir);
-      res.write("✅ Temporary files cleaned up successfully.\n");
+      // res.write("Temporary files cleaned up successfully.\n");
     } catch (cleanupError: any) {
       console.error("Cleanup error:", cleanupError);
-      res.write(
-        `⚠️  Warning: Failed to clean up temporary files: ${cleanupError.message}\n`
-      );
-      // Don't throw here - process is essentially complete
+      // res.write(
+      //   // `Warning: Failed to clean up temporary files: ${cleanupError.message}\n`
+      // );
     }
-
-    res.write(`🎉 Process completed successfully. Job ID: ${jobId}\n`);
+    res.write(`Process completed successfully.`);
     res.end();
   } catch (error: any) {
-    console.error(`Error processing job ${jobId}:`, error);
-
-    // Ensure we write a proper error message, never undefined
-    const errorMessage = error?.message || "Unknown error occurred";
-    res.write(`❌ Error: ${errorMessage}\n`);
+    console.error(`Error processing job ${jobId}:, error`);
+    // res.write(`Error: ${error.message}`);
     res.end();
   }
 };
