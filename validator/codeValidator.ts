@@ -13,11 +13,6 @@ interface ValidationResult {
 }
 
 export class ManimValidator {
-  /**
-   * Validates Manim Python code without executing the animation
-   * @param code The Manim Python code to validate
-   * @returns A promise resolving to validation results
-   */
   public async validateManimCode(code: string): Promise<ValidationResult> {
     // First perform static analysis checks
     const staticCheckResult = this.performStaticAnalysis(code);
@@ -187,15 +182,6 @@ export class ManimValidator {
       result.errors.push("No construct method found in Scene class");
       return result;
     }
-
-    // Check for main block to run the scene
-    // if (!/if\s+__name__\s*==\s*(['"])__main__\1/.test(code)) {
-    //   result.warnings.push(
-    //     'No __name__ == "__main__" block found to run the scene'
-    //   );
-    // }
-
-    // Check for common Manim objects
     const commonManimObjects = [
       "Circle",
       "Square",
@@ -248,11 +234,6 @@ export class ManimValidator {
 
     return result;
   }
-
-  /**
-   * Performs a more thorough validation by importing the code in a sandboxed environment
-   * Note: This runs Python code and should be used with caution
-   */
   public async validateWithSandbox(code: string): Promise<ValidationResult> {
     // Only run this in trusted environments where executing Python is safe
     const result: ValidationResult = {
@@ -389,70 +370,3 @@ export async function validateAndLogManimCode(code: string): Promise<void> {
     throw error;
   }
 }
-
-// Example integration with Express.js API
-/*
-import express from 'express';
-import { ManimValidator } from './manim-validator';
-
-const app = express();
-app.use(express.json());
-
-const validator = new ManimValidator();
-
-app.post('/validate-manim', async (req, res) => {
-  const { code } = req.body;
-  
-  if (!code) {
-    return res.status(400).json({ error: 'No code provided' });
-  }
-  
-  try {
-    const result = await validator.validateManimCode(code);
-    return res.json(result);
-  } catch (error) {
-    return res.status(500).json({
-      error: 'Validation failed',
-      message: error.message
-    });
-  }
-});
-
-app.post('/process-manim', async (req, res) => {
-  const { code } = req.body;
-  
-  if (!code) {
-    return res.status(400).json({ error: 'No code provided' });
-  }
-  
-  try {
-    // Validate first
-    const validationResult = await validator.validateManimCode(code);
-    
-    if (!validationResult.isValid) {
-      return res.status(400).json({
-        error: 'Invalid Manim code',
-        validation: validationResult
-      });
-    }
-    
-    // If valid, proceed with Docker execution
-    // Your Docker execution code here
-    
-    return res.json({ 
-      status: 'Processing',
-      message: 'Code validated successfully and sent for processing'
-    });
-  } catch (error) {
-    return res.status(500).json({
-      error: 'Processing failed',
-      message: error.message
-    });
-  }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-*/

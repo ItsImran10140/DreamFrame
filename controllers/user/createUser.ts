@@ -82,35 +82,3 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     });
   }
 };
-
-//  ======================================================================
-
-// import { Request, Response } from "express";
-// import { prisma } from "../../db/db";
-
-// export const createUser = async (req: Request, res: Response) => {
-//   try {
-//     const { username, email, password } = req.body;
-
-//     if (!username || !email || !password) {
-//       res.status(400).json({
-//         message: "Username, email, and password are required",
-//       });
-//       return;
-//     }
-
-//     await prisma.user.create({
-//       data: {
-//         username,
-//         email,
-//         password,
-//       },
-//     });
-
-//     res.status(200).json({
-//       message: "User created successfully",
-//     });
-//   } catch (error) {
-//     console.log("Error creating user:", error);
-//   }
-// };
