@@ -8,37 +8,40 @@ datasource db {
 }
 
 model ManimProject {
-  id String @id @default(uuid())
-  prompt String
-  code String @db.Text
-  explanation String? @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  videos Video[]
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  id          String   @id @default(uuid())
+  prompt      String
+  code        String
+  explanation String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videos      Video[]
 }
 
 model Video {
-  id String @id @default(uuid())
-  fileName String
-  fileType String
-  fileSize Int
-  data Bytes
-  s3Key String
-  s3Bucket String
-  isOutput Boolean
-  createdAt DateTime @default(now())
-  manimProject ManimProject @relation(fields: [manimProjectId], references: [id], onDelete: Cascade)
+  id             String       @id @default(uuid())
+  fileName       String
+  fileType       String
+  fileSize       Int
+  data           Bytes
+  s3Key          String
+  s3Bucket       String
+  isOutput       Boolean
+  createdAt      DateTime     @default(now())
   manimProjectId String
+  manimProject   ManimProject @relation(fields: [manimProjectId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id String @id @default(uuid())
-  username String 
-  email String @unique
-  password String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt 
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  username      String
+  avatar        String?
+  googleId      String?        @unique
+  provider      String         @default("local")
   manimProjects ManimProject[]
 }

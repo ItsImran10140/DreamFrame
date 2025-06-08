@@ -23,7 +23,7 @@ export const googleLogin = async (
         data: {
           username: name,
           email,
-          password: "", // Set a default or random password, or handle accordingly
+          // Set a default or random password, or handle accordingly
         },
       });
     }
